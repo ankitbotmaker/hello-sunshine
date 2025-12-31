@@ -1,16 +1,31 @@
-import { Search, ShoppingCart, Menu, ChevronDown, X } from "lucide-react";
+import { Search, ShoppingCart, Menu, ChevronDown, X, User, LogOut } from "lucide-react";
 import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useAuth } from "@/hooks/useAuth";
+import { useToast } from "@/hooks/use-toast";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
+  const handleSignOut = async () => {
+    await signOut();
+    toast({
+      title: "Signed Out",
+      description: "You have been signed out successfully.",
+    });
+    navigate('/');
+  };
 
   const navLinks = [
-    { label: "Home", href: "#" },
+    { label: "Home", href: "/" },
     { label: "Courses", href: "#", hasDropdown: true },
-    { label: "My account", href: "#" },
+    { label: "My account", href: "/my-account" },
     { label: "Cart", href: "#" },
     { label: "Request Course", href: "#" },
     { label: "Exchange Courses", href: "#" },
@@ -62,6 +77,25 @@ const Header = () => {
             >
               <Search className="w-5 h-5" />
             </Button>
+
+            {/* Auth Buttons */}
+            {user ? (
+              <div className="hidden sm:flex items-center gap-2">
+                <Button variant="ghost" size="sm" asChild className="gap-2">
+                  <Link to="/my-account">
+                    <User className="w-4 h-4" />
+                    Account
+                  </Link>
+                </Button>
+                <Button variant="ghost" size="icon" onClick={handleSignOut} title="Sign Out">
+                  <LogOut className="w-4 h-4" />
+                </Button>
+              </div>
+            ) : (
+              <Button variant="default" size="sm" asChild className="hidden sm:inline-flex">
+                <Link to="/auth">Login / Register</Link>
+              </Button>
+            )}
             
             <div className="flex items-center gap-2">
               <span className="font-medium">₹0.00</span>
@@ -112,13 +146,13 @@ const Header = () => {
           <ul className="hidden lg:flex items-center gap-1">
             {navLinks.map((link) => (
               <li key={link.label}>
-                <a
-                  href={link.href}
+                <Link
+                  to={link.href}
                   className="flex items-center gap-1 px-4 py-4 text-sm font-medium hover:text-primary transition-colors"
                 >
                   {link.label}
                   {link.hasDropdown && <ChevronDown className="w-4 h-4" />}
-                </a>
+                </Link>
               </li>
             ))}
           </ul>
@@ -128,15 +162,37 @@ const Header = () => {
             <ul className="lg:hidden py-4 space-y-2">
               {navLinks.map((link) => (
                 <li key={link.label}>
-                  <a
-                    href={link.href}
+                  <Link
+                    to={link.href}
                     className="flex items-center justify-between px-4 py-3 text-sm font-medium hover:bg-nav-foreground/10 rounded-lg transition-colors"
                   >
                     {link.label}
                     {link.hasDropdown && <ChevronDown className="w-4 h-4" />}
-                  </a>
+                  </Link>
                 </li>
               ))}
+              {/* Mobile Auth */}
+              {user ? (
+                <li>
+                  <button
+                    onClick={handleSignOut}
+                    className="flex items-center gap-2 w-full px-4 py-3 text-sm font-medium hover:bg-nav-foreground/10 rounded-lg transition-colors text-left"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    Sign Out
+                  </button>
+                </li>
+              ) : (
+                <li>
+                  <Link
+                    to="/auth"
+                    className="flex items-center gap-2 px-4 py-3 text-sm font-medium bg-primary text-primary-foreground rounded-lg transition-colors"
+                  >
+                    <User className="w-4 h-4" />
+                    Login / Register
+                  </Link>
+                </li>
+              )}
             </ul>
           )}
         </div>
