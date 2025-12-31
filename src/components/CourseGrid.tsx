@@ -1,9 +1,31 @@
-import { ShoppingCart } from "lucide-react";
+import { ShoppingCart, Check } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { courses } from "@/data/courses";
+import { useCart } from "@/hooks/useCart";
+import { useToast } from "@/hooks/use-toast";
 
 const CourseGrid = () => {
+  const { addToCart, isInCart } = useCart();
+  const { toast } = useToast();
+
+  const handleAddToCart = (e: React.MouseEvent, course: typeof courses[0]) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (isInCart(course.id)) {
+      toast({
+        title: "Already in Cart",
+        description: "This course is already in your cart.",
+      });
+      return;
+    }
+    addToCart(course);
+    toast({
+      title: "Added to Cart",
+      description: `${course.title} has been added to your cart.`,
+    });
+  };
+
   return (
     <section className="py-12 md:py-16 bg-background">
       <div className="container mx-auto px-4">
@@ -38,9 +60,18 @@ const CourseGrid = () => {
                 <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                   <Button
                     size="icon"
-                    className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full w-12 h-12"
+                    className={`rounded-full w-12 h-12 ${
+                      isInCart(course.id)
+                        ? "bg-primary/80 text-primary-foreground"
+                        : "bg-primary hover:bg-primary/90 text-primary-foreground"
+                    }`}
+                    onClick={(e) => handleAddToCart(e, course)}
                   >
-                    <ShoppingCart className="w-5 h-5" />
+                    {isInCart(course.id) ? (
+                      <Check className="w-5 h-5" />
+                    ) : (
+                      <ShoppingCart className="w-5 h-5" />
+                    )}
                   </Button>
                 </div>
               </div>
@@ -82,12 +113,25 @@ const CourseGrid = () => {
 
                 {/* Add to Cart Button */}
                 <Button
-                  className="w-full mt-4 bg-primary hover:bg-primary/90 text-primary-foreground"
+                  className={`w-full mt-4 ${
+                    isInCart(course.id)
+                      ? "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                      : "bg-primary hover:bg-primary/90 text-primary-foreground"
+                  }`}
                   size="sm"
-                  onClick={(e) => e.preventDefault()}
+                  onClick={(e) => handleAddToCart(e, course)}
                 >
-                  <ShoppingCart className="w-4 h-4 mr-2" />
-                  Add to cart
+                  {isInCart(course.id) ? (
+                    <>
+                      <Check className="w-4 h-4 mr-2" />
+                      In Cart
+                    </>
+                  ) : (
+                    <>
+                      <ShoppingCart className="w-4 h-4 mr-2" />
+                      Add to cart
+                    </>
+                  )}
                 </Button>
               </div>
             </Link>
