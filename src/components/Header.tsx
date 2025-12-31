@@ -1,9 +1,10 @@
-import { Search, Menu, ChevronDown, X, User, LogOut } from "lucide-react";
+import { Search, Menu, X, User, LogOut, Shield } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/useAuth";
+import { useAdmin } from "@/hooks/useAdmin";
 import { useCart } from "@/hooks/useCart";
 import { useToast } from "@/hooks/use-toast";
 import CartDrawer from "@/components/CartDrawer";
@@ -12,6 +13,7 @@ const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const { user, signOut } = useAuth();
+  const { isAdmin } = useAdmin();
   const { totalItems, totalPrice } = useCart();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -83,6 +85,14 @@ const Header = () => {
             {/* Auth Buttons */}
             {user ? (
               <div className="hidden sm:flex items-center gap-2">
+                {isAdmin && (
+                  <Button variant="ghost" size="sm" asChild className="gap-2">
+                    <Link to="/admin">
+                      <Shield className="w-4 h-4" />
+                      Admin
+                    </Link>
+                  </Button>
+                )}
                 <Button variant="ghost" size="sm" asChild className="gap-2">
                   <Link to="/my-account">
                     <User className="w-4 h-4" />
@@ -168,15 +178,28 @@ const Header = () => {
               ))}
               {/* Mobile Auth */}
               {user ? (
-                <li>
-                  <button
-                    onClick={handleSignOut}
-                    className="flex items-center gap-2 w-full px-4 py-3 text-sm font-medium hover:bg-nav-foreground/10 rounded-lg transition-colors text-left"
-                  >
-                    <LogOut className="w-4 h-4" />
-                    Sign Out
-                  </button>
-                </li>
+                <>
+                  {isAdmin && (
+                    <li>
+                      <Link
+                        to="/admin"
+                        className="flex items-center gap-2 px-4 py-3 text-sm font-medium hover:bg-nav-foreground/10 rounded-lg transition-colors"
+                      >
+                        <Shield className="w-4 h-4" />
+                        Admin Dashboard
+                      </Link>
+                    </li>
+                  )}
+                  <li>
+                    <button
+                      onClick={handleSignOut}
+                      className="flex items-center gap-2 w-full px-4 py-3 text-sm font-medium hover:bg-nav-foreground/10 rounded-lg transition-colors text-left"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      Sign Out
+                    </button>
+                  </li>
+                </>
               ) : (
                 <li>
                   <Link
