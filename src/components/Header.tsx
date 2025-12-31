@@ -86,10 +86,10 @@ const Header = () => {
             {user ? (
               <div className="hidden sm:flex items-center gap-2">
                 {isAdmin && (
-                  <Button variant="ghost" size="sm" asChild className="gap-2">
+                  <Button variant="default" size="sm" asChild className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90 shadow-md">
                     <Link to="/admin">
                       <Shield className="w-4 h-4" />
-                      Admin
+                      Admin Panel
                     </Link>
                   </Button>
                 )}
