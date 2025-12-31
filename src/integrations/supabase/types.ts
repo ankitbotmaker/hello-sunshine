@@ -14,6 +14,69 @@ export type Database = {
   }
   public: {
     Tables: {
+      courses: {
+        Row: {
+          categories: string[]
+          created_at: string
+          current_price: number
+          curriculum: Json | null
+          description: string | null
+          discount: number
+          duration: string | null
+          features: string[] | null
+          id: string
+          image_url: string | null
+          instructor: string | null
+          is_active: boolean
+          lessons: number
+          level: string
+          original_price: number
+          slug: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          categories?: string[]
+          created_at?: string
+          current_price?: number
+          curriculum?: Json | null
+          description?: string | null
+          discount?: number
+          duration?: string | null
+          features?: string[] | null
+          id?: string
+          image_url?: string | null
+          instructor?: string | null
+          is_active?: boolean
+          lessons?: number
+          level?: string
+          original_price?: number
+          slug: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          categories?: string[]
+          created_at?: string
+          current_price?: number
+          curriculum?: Json | null
+          description?: string | null
+          discount?: number
+          duration?: string | null
+          features?: string[] | null
+          id?: string
+          image_url?: string | null
+          instructor?: string | null
+          is_active?: boolean
+          lessons?: number
+          level?: string
+          original_price?: number
+          slug?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
