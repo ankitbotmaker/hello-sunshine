@@ -27,9 +27,8 @@ const Header = () => {
 
   const navLinks = [
     { label: "Home", href: "/" },
-    { label: "Courses", href: "#", hasDropdown: true },
+    { label: "Courses", href: "/courses" },
     { label: "My account", href: "/my-account" },
-    { label: "Cart", href: "#" },
     { label: "Request Course", href: "#" },
     { label: "Exchange Courses", href: "#" },
     { label: "How To Download Course", href: "#" },
@@ -149,7 +148,6 @@ const Header = () => {
                   className="flex items-center gap-1 px-4 py-4 text-sm font-medium hover:text-primary transition-colors"
                 >
                   {link.label}
-                  {link.hasDropdown && <ChevronDown className="w-4 h-4" />}
                 </Link>
               </li>
             ))}
@@ -165,7 +163,6 @@ const Header = () => {
                     className="flex items-center justify-between px-4 py-3 text-sm font-medium hover:bg-nav-foreground/10 rounded-lg transition-colors"
                   >
                     {link.label}
-                    {link.hasDropdown && <ChevronDown className="w-4 h-4" />}
                   </Link>
                 </li>
               ))}
