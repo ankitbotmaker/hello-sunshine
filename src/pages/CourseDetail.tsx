@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import AnnouncementBar from "@/components/AnnouncementBar";
+import CourseReviews from "@/components/CourseReviews";
 import { getCourseBySlug } from "@/data/courses";
 import { useAuth } from "@/hooks/useAuth";
 import { useCart } from "@/hooks/useCart";
@@ -297,6 +298,9 @@ const CourseDetail = () => {
             </div>
           </div>
         </section>
+
+        {/* Reviews Section */}
+        <CourseReviews courseSlug={course.slug} />
       </main>
 
       <Footer />

@@ -80,6 +80,39 @@ export type Database = {
         }
         Relationships: []
       }
+      reviews: {
+        Row: {
+          comment: string | null
+          course_slug: string
+          created_at: string
+          id: string
+          rating: number
+          updated_at: string
+          user_id: string
+          user_name: string | null
+        }
+        Insert: {
+          comment?: string | null
+          course_slug: string
+          created_at?: string
+          id?: string
+          rating: number
+          updated_at?: string
+          user_id: string
+          user_name?: string | null
+        }
+        Update: {
+          comment?: string | null
+          course_slug?: string
+          created_at?: string
+          id?: string
+          rating?: number
+          updated_at?: string
+          user_id?: string
+          user_name?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
