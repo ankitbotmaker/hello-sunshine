@@ -3,10 +3,12 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/useAuth";
 import { useAdmin } from "@/hooks/useAdmin";
 import { useCart } from "@/hooks/useCart";
 import { useToast } from "@/hooks/use-toast";
+import { usePendingOrders } from "@/hooks/usePendingOrders";
 import CartDrawer from "@/components/CartDrawer";
 
 const Header = () => {
@@ -15,6 +17,7 @@ const Header = () => {
   const { user, signOut } = useAuth();
   const { isAdmin } = useAdmin();
   const { totalItems, totalPrice } = useCart();
+  const { pendingCount } = usePendingOrders();
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -86,10 +89,15 @@ const Header = () => {
             {user ? (
               <div className="hidden sm:flex items-center gap-2">
                 {isAdmin && (
-                  <Button variant="default" size="sm" asChild className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90 shadow-md">
+                  <Button variant="default" size="sm" asChild className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90 shadow-md relative">
                     <Link to="/admin">
                       <Shield className="w-4 h-4" />
                       Admin Panel
+                      {pendingCount > 0 && (
+                        <Badge className="absolute -top-2 -right-2 h-5 min-w-5 px-1.5 bg-destructive text-destructive-foreground text-xs font-bold">
+                          {pendingCount}
+                        </Badge>
+                      )}
                     </Link>
                   </Button>
                 )}
