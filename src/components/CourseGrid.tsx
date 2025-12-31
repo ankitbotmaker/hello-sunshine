@@ -1,48 +1,7 @@
 import { ShoppingCart } from "lucide-react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import course1 from "@/assets/course-1.jpg";
-import course2 from "@/assets/course-2.jpg";
-import course3 from "@/assets/course-3.jpg";
-import course4 from "@/assets/course-4.jpg";
-
-const courses = [
-  {
-    id: 1,
-    title: "Rochit Singh Course",
-    image: course1,
-    categories: ["Equity", "Option Trading", "Price Action Courses", "Stock Market"],
-    originalPrice: 60.00,
-    currentPrice: 3.48,
-    discount: 94,
-  },
-  {
-    id: 2,
-    title: "Trademix Fly Strategy 2025",
-    image: course2,
-    categories: ["Option Trading", "Stock Market"],
-    originalPrice: 45.00,
-    currentPrice: 12.60,
-    discount: 72,
-  },
-  {
-    id: 3,
-    title: "Advanced SL Hunting Masterclass",
-    image: course3,
-    categories: ["Forex Courses", "Price Action Courses"],
-    originalPrice: 120.00,
-    currentPrice: 8.40,
-    discount: 93,
-  },
-  {
-    id: 4,
-    title: "Price Action Complete Course",
-    image: course4,
-    categories: ["Price Action Courses", "Stock Market"],
-    originalPrice: 80.00,
-    currentPrice: 4.80,
-    discount: 94,
-  },
-];
+import { courses } from "@/data/courses";
 
 const CourseGrid = () => {
   return (
@@ -56,9 +15,10 @@ const CourseGrid = () => {
         {/* Course Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {courses.map((course, index) => (
-            <div
+            <Link
+              to={`/course/${course.slug}`}
               key={course.id}
-              className="group bg-card rounded-lg overflow-hidden shadow-md hover-lift animate-fade-in border border-border"
+              className="group bg-card rounded-lg overflow-hidden shadow-md hover-lift animate-fade-in border border-border block"
               style={{ animationDelay: `${index * 0.1}s` }}
             >
               {/* Image Container */}
@@ -124,12 +84,13 @@ const CourseGrid = () => {
                 <Button
                   className="w-full mt-4 bg-primary hover:bg-primary/90 text-primary-foreground"
                   size="sm"
+                  onClick={(e) => e.preventDefault()}
                 >
                   <ShoppingCart className="w-4 h-4 mr-2" />
                   Add to cart
                 </Button>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </div>
