@@ -1,15 +1,18 @@
-import { Search, ShoppingCart, Menu, ChevronDown, X, User, LogOut } from "lucide-react";
+import { Search, Menu, ChevronDown, X, User, LogOut } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/useAuth";
+import { useCart } from "@/hooks/useCart";
 import { useToast } from "@/hooks/use-toast";
+import CartDrawer from "@/components/CartDrawer";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const { user, signOut } = useAuth();
+  const { totalItems, totalPrice } = useCart();
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -98,13 +101,8 @@ const Header = () => {
             )}
             
             <div className="flex items-center gap-2">
-              <span className="font-medium">₹0.00</span>
-              <div className="relative">
-                <ShoppingCart className="w-5 h-5" />
-                <span className="absolute -top-2 -right-2 w-5 h-5 bg-primary text-primary-foreground text-xs rounded-full flex items-center justify-center">
-                  0
-                </span>
-              </div>
+              <span className="font-medium hidden sm:inline">${totalPrice.toFixed(2)}</span>
+              <CartDrawer />
             </div>
 
             <Button

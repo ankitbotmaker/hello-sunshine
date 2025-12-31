@@ -8,6 +8,7 @@ import Footer from "@/components/Footer";
 import AnnouncementBar from "@/components/AnnouncementBar";
 import { getCourseBySlug } from "@/data/courses";
 import { useAuth } from "@/hooks/useAuth";
+import { useCart } from "@/hooks/useCart";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -15,6 +16,7 @@ const CourseDetail = () => {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { addToCart, isInCart } = useCart();
   const { toast } = useToast();
   const [expandedModules, setExpandedModules] = useState<number[]>([0]);
   const [isPurchasing, setIsPurchasing] = useState(false);
@@ -182,15 +184,47 @@ const CourseDetail = () => {
                     </Badge>
                   </div>
 
-                  <Button
-                    onClick={handlePurchase}
-                    disabled={isPurchasing}
-                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground text-lg py-6"
-                    size="lg"
-                  >
-                    <ShoppingCart className="w-5 h-5 mr-2" />
-                    {isPurchasing ? "Processing..." : "Purchase Now"}
-                  </Button>
+                  <div className="flex gap-3">
+                    <Button
+                      onClick={() => {
+                        if (isInCart(course.id)) {
+                          toast({
+                            title: "Already in Cart",
+                            description: "This course is already in your cart.",
+                          });
+                          return;
+                        }
+                        addToCart(course);
+                        toast({
+                          title: "Added to Cart",
+                          description: `${course.title} has been added to your cart.`,
+                        });
+                      }}
+                      variant={isInCart(course.id) ? "secondary" : "outline"}
+                      className="flex-1 text-lg py-6"
+                      size="lg"
+                    >
+                      {isInCart(course.id) ? (
+                        <>
+                          <Check className="w-5 h-5 mr-2" />
+                          In Cart
+                        </>
+                      ) : (
+                        <>
+                          <ShoppingCart className="w-5 h-5 mr-2" />
+                          Add to Cart
+                        </>
+                      )}
+                    </Button>
+                    <Button
+                      onClick={handlePurchase}
+                      disabled={isPurchasing}
+                      className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground text-lg py-6"
+                      size="lg"
+                    >
+                      {isPurchasing ? "Processing..." : "Buy Now"}
+                    </Button>
+                  </div>
 
                   {/* Features */}
                   <div className="grid grid-cols-2 gap-2 pt-4 border-t border-border">
