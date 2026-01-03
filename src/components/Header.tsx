@@ -112,9 +112,17 @@ const Header = () => {
                 </Button>
               </div>
             ) : (
-              <Button variant="default" size="sm" asChild className="hidden sm:inline-flex">
-                <Link to="/auth">Login / Register</Link>
-              </Button>
+              <div className="hidden sm:flex items-center gap-2">
+                <Button variant="default" size="sm" asChild className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90 shadow-md">
+                  <Link to="/admin-login">
+                    <Shield className="w-4 h-4" />
+                    Admin Panel
+                  </Link>
+                </Button>
+                <Button variant="outline" size="sm" asChild>
+                  <Link to="/auth">Login / Register</Link>
+                </Button>
+              </div>
             )}
             
             <div className="flex items-center gap-2">
@@ -209,15 +217,26 @@ const Header = () => {
                   </li>
                 </>
               ) : (
-                <li>
-                  <Link
-                    to="/auth"
-                    className="flex items-center gap-2 px-4 py-3 text-sm font-medium bg-primary text-primary-foreground rounded-lg transition-colors"
-                  >
-                    <User className="w-4 h-4" />
-                    Login / Register
-                  </Link>
-                </li>
+                <>
+                  <li>
+                    <Link
+                      to="/admin-login"
+                      className="flex items-center gap-2 px-4 py-3 text-sm font-medium bg-primary text-primary-foreground rounded-lg transition-colors"
+                    >
+                      <Shield className="w-4 h-4" />
+                      Admin Panel
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/auth"
+                      className="flex items-center gap-2 px-4 py-3 text-sm font-medium hover:bg-nav-foreground/10 rounded-lg transition-colors"
+                    >
+                      <User className="w-4 h-4" />
+                      Login / Register
+                    </Link>
+                  </li>
+                </>
               )}
             </ul>
           )}
