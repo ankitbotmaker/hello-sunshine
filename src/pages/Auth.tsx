@@ -5,17 +5,15 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
-import { Eye, EyeOff, Mail, Lock, User } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock } from 'lucide-react';
 
 const Auth = () => {
-  const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [fullName, setFullName] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   
-  const { signIn, signUp, user, loading } = useAuth();
+  const { signIn, user, loading } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -45,24 +43,6 @@ const Auth = () => {
       return false;
     }
 
-    if (password.length < 6) {
-      toast({
-        title: "Error",
-        description: "Password must be at least 6 characters",
-        variant: "destructive",
-      });
-      return false;
-    }
-
-    if (!isLogin && !fullName.trim()) {
-      toast({
-        title: "Error",
-        description: "Please enter your full name",
-        variant: "destructive",
-      });
-      return false;
-    }
-
     return true;
   };
 
@@ -74,44 +54,23 @@ const Auth = () => {
     setIsLoading(true);
 
     try {
-      if (isLogin) {
-        const { error } = await signIn(email, password);
-        if (error) {
-          let message = error.message;
-          if (error.message.includes('Invalid login credentials')) {
-            message = 'Invalid email or password. Please try again.';
-          }
-          toast({
-            title: "Login Failed",
-            description: message,
-            variant: "destructive",
-          });
-        } else {
-          toast({
-            title: "Welcome back!",
-            description: "You have successfully logged in.",
-          });
-          navigate('/');
+      const { error } = await signIn(email, password);
+      if (error) {
+        let message = error.message;
+        if (error.message.includes('Invalid login credentials')) {
+          message = 'Invalid email or password. Please try again.';
         }
+        toast({
+          title: "Login Failed",
+          description: message,
+          variant: "destructive",
+        });
       } else {
-        const { error } = await signUp(email, password, fullName);
-        if (error) {
-          let message = error.message;
-          if (error.message.includes('User already registered')) {
-            message = 'This email is already registered. Please login instead.';
-          }
-          toast({
-            title: "Signup Failed",
-            description: message,
-            variant: "destructive",
-          });
-        } else {
-          toast({
-            title: "Account Created!",
-            description: "Your account has been created successfully.",
-          });
-          navigate('/');
-        }
+        toast({
+          title: "Welcome back!",
+          description: "You have successfully logged in.",
+        });
+        navigate('/');
       }
     } catch (error) {
       toast({
@@ -148,30 +107,13 @@ const Auth = () => {
 
         <Card className="border-border bg-card">
           <CardHeader className="text-center">
-            <CardTitle className="text-2xl text-foreground">
-              {isLogin ? 'Welcome Back' : 'Create Account'}
-            </CardTitle>
+            <CardTitle className="text-2xl text-foreground">Welcome Back</CardTitle>
             <CardDescription>
-              {isLogin 
-                ? 'Enter your credentials to access your account' 
-                : 'Sign up to start your learning journey'}
+              Enter your credentials to access your account
             </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
-              {!isLogin && (
-                <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                  <Input
-                    type="text"
-                    placeholder="Full Name"
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
-                    className="pl-10"
-                  />
-                </div>
-              )}
-              
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                 <Input
@@ -202,22 +144,9 @@ const Auth = () => {
               </div>
 
               <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? 'Please wait...' : (isLogin ? 'Login' : 'Create Account')}
+                {isLoading ? 'Please wait...' : 'Login'}
               </Button>
             </form>
-
-            <div className="mt-6 text-center">
-              <p className="text-muted-foreground">
-                {isLogin ? "Don't have an account?" : 'Already have an account?'}
-                <button
-                  type="button"
-                  onClick={() => setIsLogin(!isLogin)}
-                  className="ml-1 text-primary hover:underline font-medium"
-                >
-                  {isLogin ? 'Sign Up' : 'Login'}
-                </button>
-              </p>
-            </div>
           </CardContent>
         </Card>
 
