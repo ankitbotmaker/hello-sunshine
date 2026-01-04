@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Search, Filter, X, ShoppingCart, Check, SlidersHorizontal } from "lucide-react";
+import { Search, Filter, X, Send, SlidersHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -23,8 +23,8 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import AnnouncementBar from "@/components/AnnouncementBar";
 import { supabase } from "@/integrations/supabase/client";
-import { useCart } from "@/hooks/useCart";
-import { useToast } from "@/hooks/use-toast";
+
+const TELEGRAM_USERNAME = "stcs111111111111";
 
 interface Course {
   id: string;
@@ -45,8 +45,6 @@ interface Course {
 }
 
 const Courses = () => {
-  const { addToCart, isInCart } = useCart();
-  const { toast } = useToast();
   
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
@@ -178,40 +176,19 @@ const Courses = () => {
     selectedLevels.length +
     (priceFilter[0] !== priceRange.min || priceFilter[1] !== priceRange.max ? 1 : 0);
 
-  const handleAddToCart = (e: React.MouseEvent, course: Course) => {
+  const handleBuyNow = (e: React.MouseEvent, course: Course) => {
     e.preventDefault();
     e.stopPropagation();
     
-    const cartItem = {
-      id: course.id,
-      slug: course.slug,
-      title: course.title,
-      image: course.image_url || '/placeholder.svg',
-      categories: course.categories || [],
-      originalPrice: course.original_price,
-      currentPrice: course.current_price,
-      discount: course.discount,
-      description: course.description || '',
-      instructor: course.instructor || '',
-      duration: course.duration || '',
-      lessons: course.lessons,
-      level: course.level,
-      curriculum: [],
-      features: course.features || [],
-    };
-
-    if (isInCart(course.id)) {
-      toast({
-        title: "Already in Cart",
-        description: "This course is already in your cart.",
-      });
-      return;
-    }
-    addToCart(cartItem);
-    toast({
-      title: "Added to Cart",
-      description: `${course.title} has been added to your cart.`,
-    });
+    const message = encodeURIComponent(
+      `🎓 *Course Purchase Request*\n\n` +
+      `📚 *Course:* ${course.title}\n` +
+      `💰 *Price:* $${course.current_price.toFixed(2)} (Original: $${course.original_price.toFixed(2)})\n` +
+      `🏷️ *Discount:* ${course.discount}% OFF\n` +
+      `📊 *Level:* ${course.level}\n\n` +
+      `I'm interested in purchasing this course!`
+    );
+    window.open(`https://t.me/${TELEGRAM_USERNAME}?text=${message}`, '_blank');
   };
 
   const FilterContent = () => (
@@ -513,27 +490,14 @@ const Courses = () => {
                           </span>
                         </div>
 
-                        {/* Add to Cart Button */}
+                        {/* Buy Now Button */}
                         <Button
-                          className={`w-full ${
-                            isInCart(course.id)
-                              ? "bg-secondary text-secondary-foreground hover:bg-secondary/80"
-                              : "bg-primary hover:bg-primary/90 text-primary-foreground"
-                          }`}
+                          className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
                           size="sm"
-                          onClick={(e) => handleAddToCart(e, course)}
+                          onClick={(e) => handleBuyNow(e, course)}
                         >
-                          {isInCart(course.id) ? (
-                            <>
-                              <Check className="w-4 h-4 mr-2" />
-                              In Cart
-                            </>
-                          ) : (
-                            <>
-                              <ShoppingCart className="w-4 h-4 mr-2" />
-                              Add to cart
-                            </>
-                          )}
+                          <Send className="w-4 h-4 mr-2" />
+                          Buy Now
                         </Button>
                       </div>
                     </Link>

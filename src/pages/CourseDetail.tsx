@@ -1,5 +1,5 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { ShoppingCart, Clock, BookOpen, BarChart3, Check, ChevronDown, ChevronUp, ArrowLeft } from "lucide-react";
+import { Clock, BookOpen, BarChart3, Check, ChevronDown, ChevronUp, ArrowLeft, Send } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -8,8 +8,8 @@ import Footer from "@/components/Footer";
 import AnnouncementBar from "@/components/AnnouncementBar";
 import CourseReviews from "@/components/CourseReviews";
 import { supabase } from "@/integrations/supabase/client";
-import { useCart } from "@/hooks/useCart";
-import { useToast } from "@/hooks/use-toast";
+
+const TELEGRAM_USERNAME = "stcs111111111111";
 
 interface CourseModule {
   title: string;
@@ -38,8 +38,6 @@ interface Course {
 const CourseDetail = () => {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
-  const { addToCart, isInCart } = useCart();
-  const { toast } = useToast();
   const [expandedModules, setExpandedModules] = useState<number[]>([0]);
   const [course, setCourse] = useState<Course | null>(null);
   const [loading, setLoading] = useState(true);
@@ -111,41 +109,18 @@ const CourseDetail = () => {
     );
   };
 
-  const handleAddToCart = () => {
-    const cartItem = {
-      id: course.id,
-      slug: course.slug,
-      title: course.title,
-      image: course.image_url || '/placeholder.svg',
-      categories: course.categories,
-      originalPrice: course.original_price,
-      currentPrice: course.current_price,
-      discount: course.discount,
-      description: course.description || '',
-      instructor: course.instructor || '',
-      duration: course.duration || '',
-      lessons: course.lessons,
-      level: course.level,
-      curriculum: course.curriculum,
-      features: course.features,
-    };
-
-    if (isInCart(course.id)) {
-      toast({
-        title: "Already in Cart",
-        description: "This course is already in your cart.",
-      });
-      return;
-    }
-    addToCart(cartItem);
-    toast({
-      title: "Added to Cart",
-      description: `${course.title} has been added to your cart.`,
-    });
-  };
-
-  const handlePurchase = () => {
-    handleAddToCart();
+  const handleBuyNow = () => {
+    const message = encodeURIComponent(
+      `🎓 *Course Purchase Request*\n\n` +
+      `📚 *Course:* ${course.title}\n` +
+      `💰 *Price:* $${course.current_price.toFixed(2)} (Original: $${course.original_price.toFixed(2)})\n` +
+      `🏷️ *Discount:* ${course.discount}% OFF\n` +
+      `📊 *Level:* ${course.level}\n` +
+      `⏱️ *Duration:* ${course.duration || 'Self-paced'}\n` +
+      `📖 *Lessons:* ${course.lessons}\n\n` +
+      `I'm interested in purchasing this course!`
+    );
+    window.open(`https://t.me/${TELEGRAM_USERNAME}?text=${message}`, '_blank');
   };
 
   const totalLessons = course.curriculum?.reduce((acc, module) => acc + (module.lessons?.length || 0), 0) || 0;
@@ -244,33 +219,14 @@ const CourseDetail = () => {
                     </Badge>
                   </div>
 
-                  <div className="flex gap-3">
-                    <Button
-                      onClick={handleAddToCart}
-                      variant={isInCart(course.id) ? "secondary" : "outline"}
-                      className="flex-1 text-lg py-6"
-                      size="lg"
-                    >
-                      {isInCart(course.id) ? (
-                        <>
-                          <Check className="w-5 h-5 mr-2" />
-                          In Cart
-                        </>
-                      ) : (
-                        <>
-                          <ShoppingCart className="w-5 h-5 mr-2" />
-                          Add to Cart
-                        </>
-                      )}
-                    </Button>
-                    <Button
-                      onClick={handlePurchase}
-                      className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground text-lg py-6"
-                      size="lg"
-                    >
-                      Buy Now
-                    </Button>
-                  </div>
+                  <Button
+                    onClick={handleBuyNow}
+                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground text-lg py-6"
+                    size="lg"
+                  >
+                    <Send className="w-5 h-5 mr-2" />
+                    Buy Now on Telegram
+                  </Button>
 
                   {/* Features */}
                   {course.features && course.features.length > 0 && (
