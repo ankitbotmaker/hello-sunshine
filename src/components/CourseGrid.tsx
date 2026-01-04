@@ -94,8 +94,8 @@ const CourseGrid = () => {
     <section className="py-12 md:py-16 bg-[hsl(var(--nav-bg))]">
       <div className="container mx-auto px-4">
         {/* Section Title */}
-        <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-center text-primary mb-10">
-          Our Latest Courses
+        <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-center text-primary mb-10 animate-fade-in">
+          <span className="text-gradient">Our Latest Courses</span>
         </h2>
 
         {/* Course Grid */}
@@ -104,7 +104,7 @@ const CourseGrid = () => {
             <Link
               to={`/course/${course.slug}`}
               key={course.id}
-              className="group bg-secondary rounded-lg overflow-hidden shadow-lg hover-lift animate-fade-in border border-border/50 block"
+              className="group bg-secondary rounded-lg overflow-hidden shadow-lg hover:shadow-primary/20 hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 ease-out animate-fade-in border border-border/50 hover:border-primary/30 block"
               style={{ animationDelay: `${index * 0.1}s` }}
             >
               {/* Image Container */}
@@ -116,7 +116,7 @@ const CourseGrid = () => {
                 />
                 
                 {/* Discount Badge */}
-                <div className="absolute top-3 left-3 bg-destructive text-destructive-foreground text-sm font-bold px-2 py-1 rounded">
+                <div className="absolute top-3 left-3 bg-destructive text-destructive-foreground text-sm font-bold px-2 py-1 rounded animate-float shadow-lg">
                   -{course.discount}%
                 </div>
 
@@ -153,7 +153,7 @@ const CourseGrid = () => {
                 </div>
 
                 {/* Title */}
-                <h3 className="font-semibold text-card-foreground mb-3 line-clamp-2 group-hover:text-primary transition-colors">
+                <h3 className="font-semibold text-card-foreground mb-3 line-clamp-2 group-hover:text-primary transition-all duration-300">
                   {course.title}
                 </h3>
 
@@ -162,18 +162,18 @@ const CourseGrid = () => {
                   <span className="text-muted-foreground line-through text-sm">
                     ${course.original_price.toFixed(2)}
                   </span>
-                  <span className="text-primary font-bold text-lg">
+                  <span className="text-primary font-bold text-lg group-hover:scale-110 transition-transform duration-300 inline-block">
                     ${course.current_price.toFixed(2)}
                   </span>
                 </div>
 
                 {/* Buy Now Button */}
                 <Button
-                  className="w-full mt-4 bg-primary hover:bg-primary/90 text-primary-foreground"
+                  className="w-full mt-4 bg-primary hover:bg-primary/90 text-primary-foreground hover:scale-105 transition-all duration-300 hover:shadow-lg hover:shadow-primary/30"
                   size="sm"
                   onClick={(e) => handleBuyNow(e, course)}
                 >
-                  <Send className="w-4 h-4 mr-2" />
+                  <Send className="w-4 h-4 mr-2 group-hover:translate-x-1 transition-transform duration-300" />
                   Buy Now
                 </Button>
               </div>
