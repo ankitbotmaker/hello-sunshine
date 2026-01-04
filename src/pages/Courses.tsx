@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Search, Filter, X, ShoppingCart, Check, SlidersHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -22,34 +22,81 @@ import {
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import AnnouncementBar from "@/components/AnnouncementBar";
-import { courses } from "@/data/courses";
+import { supabase } from "@/integrations/supabase/client";
 import { useCart } from "@/hooks/useCart";
 import { useToast } from "@/hooks/use-toast";
 
-// Extract unique categories and levels
-const allCategories = Array.from(
-  new Set(courses.flatMap((c) => c.categories))
-).sort();
-
-const allLevels = Array.from(new Set(courses.map((c) => c.level))).sort();
-
-const priceRange = {
-  min: Math.floor(Math.min(...courses.map((c) => c.currentPrice))),
-  max: Math.ceil(Math.max(...courses.map((c) => c.currentPrice))),
-};
+interface Course {
+  id: string;
+  slug: string;
+  title: string;
+  image_url: string | null;
+  categories: string[];
+  original_price: number;
+  current_price: number;
+  discount: number;
+  description: string | null;
+  instructor: string | null;
+  duration: string | null;
+  lessons: number;
+  level: string;
+  features: string[];
+  is_active: boolean;
+}
 
 const Courses = () => {
   const { addToCart, isInCart } = useCart();
   const { toast } = useToast();
   
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedLevels, setSelectedLevels] = useState<string[]>([]);
-  const [priceFilter, setPriceFilter] = useState<[number, number]>([
-    priceRange.min,
-    priceRange.max,
-  ]);
   const [sortBy, setSortBy] = useState<"default" | "price-low" | "price-high" | "discount">("default");
+
+  useEffect(() => {
+    const fetchCourses = async () => {
+      const { data, error } = await supabase
+        .from('courses')
+        .select('*')
+        .eq('is_active', true)
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching courses:', error);
+      } else {
+        setCourses(data || []);
+      }
+      setLoading(false);
+    };
+
+    fetchCourses();
+  }, []);
+
+  // Extract unique categories and levels from fetched courses
+  const allCategories = useMemo(() => 
+    Array.from(new Set(courses.flatMap((c) => c.categories || []))).sort(),
+    [courses]
+  );
+
+  const allLevels = useMemo(() => 
+    Array.from(new Set(courses.map((c) => c.level))).sort(),
+    [courses]
+  );
+
+  const priceRange = useMemo(() => ({
+    min: courses.length > 0 ? Math.floor(Math.min(...courses.map((c) => c.current_price))) : 0,
+    max: courses.length > 0 ? Math.ceil(Math.max(...courses.map((c) => c.current_price))) : 100,
+  }), [courses]);
+
+  const [priceFilter, setPriceFilter] = useState<[number, number]>([0, 100]);
+
+  useEffect(() => {
+    if (courses.length > 0) {
+      setPriceFilter([priceRange.min, priceRange.max]);
+    }
+  }, [priceRange]);
 
   const handleCategoryToggle = (category: string) => {
     setSelectedCategories((prev) =>
@@ -81,7 +128,7 @@ const Courses = () => {
       if (
         searchQuery &&
         !course.title.toLowerCase().includes(searchQuery.toLowerCase()) &&
-        !course.description.toLowerCase().includes(searchQuery.toLowerCase())
+        !(course.description || '').toLowerCase().includes(searchQuery.toLowerCase())
       ) {
         return false;
       }
@@ -89,7 +136,7 @@ const Courses = () => {
       // Category filter
       if (
         selectedCategories.length > 0 &&
-        !course.categories.some((cat) => selectedCategories.includes(cat))
+        !(course.categories || []).some((cat) => selectedCategories.includes(cat))
       ) {
         return false;
       }
@@ -101,8 +148,8 @@ const Courses = () => {
 
       // Price filter
       if (
-        course.currentPrice < priceFilter[0] ||
-        course.currentPrice > priceFilter[1]
+        course.current_price < priceFilter[0] ||
+        course.current_price > priceFilter[1]
       ) {
         return false;
       }
@@ -113,10 +160,10 @@ const Courses = () => {
     // Sort
     switch (sortBy) {
       case "price-low":
-        result.sort((a, b) => a.currentPrice - b.currentPrice);
+        result.sort((a, b) => a.current_price - b.current_price);
         break;
       case "price-high":
-        result.sort((a, b) => b.currentPrice - a.currentPrice);
+        result.sort((a, b) => b.current_price - a.current_price);
         break;
       case "discount":
         result.sort((a, b) => b.discount - a.discount);
@@ -124,16 +171,35 @@ const Courses = () => {
     }
 
     return result;
-  }, [searchQuery, selectedCategories, selectedLevels, priceFilter, sortBy]);
+  }, [courses, searchQuery, selectedCategories, selectedLevels, priceFilter, sortBy]);
 
   const activeFiltersCount =
     selectedCategories.length +
     selectedLevels.length +
     (priceFilter[0] !== priceRange.min || priceFilter[1] !== priceRange.max ? 1 : 0);
 
-  const handleAddToCart = (e: React.MouseEvent, course: typeof courses[0]) => {
+  const handleAddToCart = (e: React.MouseEvent, course: Course) => {
     e.preventDefault();
     e.stopPropagation();
+    
+    const cartItem = {
+      id: course.id,
+      slug: course.slug,
+      title: course.title,
+      image: course.image_url || '/placeholder.svg',
+      categories: course.categories || [],
+      originalPrice: course.original_price,
+      currentPrice: course.current_price,
+      discount: course.discount,
+      description: course.description || '',
+      instructor: course.instructor || '',
+      duration: course.duration || '',
+      lessons: course.lessons,
+      level: course.level,
+      curriculum: [],
+      features: course.features || [],
+    };
+
     if (isInCart(course.id)) {
       toast({
         title: "Already in Cart",
@@ -141,7 +207,7 @@ const Courses = () => {
       });
       return;
     }
-    addToCart(course);
+    addToCart(cartItem);
     toast({
       title: "Added to Cart",
       description: `${course.title} has been added to your cart.`,
@@ -239,6 +305,19 @@ const Courses = () => {
       )}
     </div>
   );
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col">
+        <AnnouncementBar />
+        <Header />
+        <main className="flex-1 flex items-center justify-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent"></div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -391,7 +470,7 @@ const Courses = () => {
                       {/* Image Container */}
                       <div className="relative aspect-video overflow-hidden">
                         <img
-                          src={course.image}
+                          src={course.image_url || '/placeholder.svg'}
                           alt={course.title}
                           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                         />
@@ -407,14 +486,14 @@ const Courses = () => {
                       <div className="p-4">
                         {/* Categories */}
                         <div className="flex flex-wrap gap-1 mb-2">
-                          {course.categories.slice(0, 2).map((cat) => (
+                          {(course.categories || []).slice(0, 2).map((cat) => (
                             <span
                               key={cat}
                               className="text-xs text-primary"
                             >
                               {cat}
-                              {course.categories.indexOf(cat) <
-                                Math.min(course.categories.length, 2) - 1 && ","}
+                              {(course.categories || []).indexOf(cat) <
+                                Math.min((course.categories || []).length, 2) - 1 && ","}
                             </span>
                           ))}
                         </div>
@@ -427,10 +506,10 @@ const Courses = () => {
                         {/* Price */}
                         <div className="flex items-center gap-2 mb-4">
                           <span className="text-muted-foreground line-through text-sm">
-                            ${course.originalPrice.toFixed(2)}
+                            ${course.original_price.toFixed(2)}
                           </span>
                           <span className="text-primary font-bold text-lg">
-                            ${course.currentPrice.toFixed(2)}
+                            ${course.current_price.toFixed(2)}
                           </span>
                         </div>
 
