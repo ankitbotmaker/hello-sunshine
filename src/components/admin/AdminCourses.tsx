@@ -92,53 +92,54 @@ const AdminCourses = () => {
 
   if (loading) {
     return (
-      <Card>
-        <CardContent className="py-10 text-center">
-          <p className="text-muted-foreground">Loading courses...</p>
-        </CardContent>
-      </Card>
+      <div className="bg-white/5 border border-white/10 rounded-2xl p-10 text-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-4 border-primary border-t-transparent mx-auto mb-4"></div>
+        <p className="text-white/50">Loading courses...</p>
+      </div>
     );
   }
 
   return (
     <>
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center gap-2">
-              <BookOpen className="h-5 w-5" />
-              Course Management
-            </CardTitle>
-            <div className="flex items-center gap-2">
-              <Badge variant="outline">{courses.length} courses</Badge>
-              <Button onClick={handleCreate}>
-                <Plus className="h-4 w-4 mr-2" />
-                Add Course
-              </Button>
+      <div className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden">
+        <div className="p-6 border-b border-white/10">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-gradient-to-br from-blue-500 to-purple-500 rounded-xl">
+                <BookOpen className="h-5 w-5 text-white" />
+              </div>
+              <div>
+                <h2 className="text-xl font-bold text-white">Course Management</h2>
+                <p className="text-sm text-white/50">{courses.length} total courses</p>
+              </div>
             </div>
+            <Button onClick={handleCreate} className="bg-gradient-to-r from-primary to-emerald-400 hover:from-primary/90 hover:to-emerald-400/90 text-white shadow-lg shadow-primary/25">
+              <Plus className="h-4 w-4 mr-2" />
+              Add Course
+            </Button>
           </div>
-        </CardHeader>
-        <CardContent>
+        </div>
+        <div className="p-6">
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-4">
-            <div className="flex items-center gap-2 flex-1">
-              <Search className="h-4 w-4 text-muted-foreground" />
+          <div className="flex items-center gap-2 flex-1">
+              <Search className="h-4 w-4 text-white/40" />
               <Input
                 placeholder="Search courses..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="max-w-sm"
+                className="max-w-sm bg-white/5 border-white/10 text-white placeholder:text-white/40 focus:border-primary"
               />
             </div>
             <div className="flex items-center gap-2">
-              <Filter className="h-4 w-4 text-muted-foreground" />
+              <Filter className="h-4 w-4 text-white/40" />
               <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-                <SelectTrigger className="w-[180px] bg-background">
+                <SelectTrigger className="w-[180px] bg-white/5 border-white/10 text-white">
                   <SelectValue placeholder="All Categories" />
                 </SelectTrigger>
-                <SelectContent className="bg-popover border border-border shadow-lg z-50">
-                  <SelectItem value="all">All Categories</SelectItem>
+                <SelectContent className="bg-slate-800 border-white/10">
+                  <SelectItem value="all" className="text-white hover:bg-white/10">All Categories</SelectItem>
                   {allCategories.map((category) => (
-                    <SelectItem key={category} value={category}>
+                    <SelectItem key={category} value={category} className="text-white hover:bg-white/10">
                       {category}
                     </SelectItem>
                   ))}
@@ -148,10 +149,12 @@ const AdminCourses = () => {
           </div>
 
           {filteredCourses.length === 0 ? (
-            <div className="text-center py-10">
-              <BookOpen className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-              <p className="text-muted-foreground mb-4">No courses found</p>
-              <Button onClick={handleCreate}>
+            <div className="text-center py-16">
+              <div className="p-4 bg-white/5 rounded-full w-fit mx-auto mb-4">
+                <BookOpen className="h-12 w-12 text-white/30" />
+              </div>
+              <p className="text-white/50 mb-4">No courses found</p>
+              <Button onClick={handleCreate} className="bg-gradient-to-r from-primary to-emerald-400">
                 <Plus className="h-4 w-4 mr-2" />
                 Add Your First Course
               </Button>
@@ -159,18 +162,18 @@ const AdminCourses = () => {
           ) : (
             <Table>
               <TableHeader>
-                <TableRow>
-                  <TableHead>Course</TableHead>
-                  <TableHead>Category</TableHead>
-                  <TableHead>Level</TableHead>
-                  <TableHead>Price</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Actions</TableHead>
+                <TableRow className="border-white/10 hover:bg-transparent">
+                  <TableHead className="text-white/70">Course</TableHead>
+                  <TableHead className="text-white/70">Category</TableHead>
+                  <TableHead className="text-white/70">Level</TableHead>
+                  <TableHead className="text-white/70">Price</TableHead>
+                  <TableHead className="text-white/70">Status</TableHead>
+                  <TableHead className="text-white/70">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filteredCourses.map((course) => (
-                  <TableRow key={course.id}>
+                  <TableRow key={course.id} className="border-white/10 hover:bg-white/5">
                     <TableCell>
                       <div className="flex items-center gap-3">
                         {course.image_url ? (
@@ -180,20 +183,20 @@ const AdminCourses = () => {
                             className="w-12 h-12 object-cover rounded"
                           />
                         ) : (
-                          <div className="w-12 h-12 bg-muted rounded flex items-center justify-center">
-                            <BookOpen className="h-6 w-6 text-muted-foreground" />
+                          <div className="w-12 h-12 bg-white/10 rounded-lg flex items-center justify-center">
+                            <BookOpen className="h-6 w-6 text-white/50" />
                           </div>
                         )}
                         <div>
-                          <p className="font-medium line-clamp-1">{course.title}</p>
-                          <p className="text-sm text-muted-foreground">{course.instructor || 'No instructor'}</p>
+                          <p className="font-medium text-white line-clamp-1">{course.title}</p>
+                          <p className="text-sm text-white/50">{course.instructor || 'No instructor'}</p>
                         </div>
                       </div>
                     </TableCell>
                     <TableCell>
                       <div className="flex flex-wrap gap-1">
                         {course.categories?.slice(0, 2).map((cat) => (
-                          <Badge key={cat} variant="outline" className="text-xs">{cat}</Badge>
+                          <Badge key={cat} variant="outline" className="text-xs border-white/20 text-white/70">{cat}</Badge>
                         ))}
                       </div>
                     </TableCell>
@@ -202,35 +205,36 @@ const AdminCourses = () => {
                     </TableCell>
                     <TableCell>
                       <div>
-                        <p className="font-medium">${course.current_price}</p>
+                        <p className="font-medium text-primary">${course.current_price}</p>
                         {course.original_price > course.current_price && (
-                          <p className="text-sm text-muted-foreground line-through">
+                          <p className="text-sm text-white/40 line-through">
                             ${course.original_price}
                           </p>
                         )}
                       </div>
                     </TableCell>
                     <TableCell>
-                      <Badge variant={course.is_active ? 'default' : 'secondary'}>
+                      <Badge className={course.is_active ? 'bg-primary/20 text-primary border-0' : 'bg-white/10 text-white/50 border-0'}>
                         {course.is_active ? 'Active' : 'Inactive'}
                       </Badge>
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
-                        <Button variant="ghost" size="sm" asChild>
+                        <Button variant="ghost" size="sm" asChild className="text-white/70 hover:text-white hover:bg-white/10">
                           <Link to={`/course/${course.slug}`}>
                             <Eye className="h-4 w-4" />
                           </Link>
                         </Button>
-                        <Button variant="ghost" size="sm" onClick={() => handleEdit(course)}>
+                        <Button variant="ghost" size="sm" onClick={() => handleEdit(course)} className="text-white/70 hover:text-white hover:bg-white/10">
                           <Edit className="h-4 w-4" />
                         </Button>
                         <Button
                           variant="ghost"
                           size="sm"
                           onClick={() => handleDeleteClick(course)}
+                          className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
                         >
-                          <Trash2 className="h-4 w-4 text-destructive" />
+                          <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
                     </TableCell>
@@ -239,8 +243,8 @@ const AdminCourses = () => {
               </TableBody>
             </Table>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       <CourseFormDialog
         open={formOpen}
