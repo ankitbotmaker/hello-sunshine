@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
+import { useScrollReveal } from "@/hooks/useScrollReveal";
 
 const TELEGRAM_USERNAME = "stcs111111111111";
 
@@ -26,6 +27,7 @@ interface Course {
 const CourseGrid = () => {
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
+  const { ref, isVisible } = useScrollReveal({ threshold: 0.1 });
 
   useEffect(() => {
     const fetchCourses = async () => {
@@ -64,7 +66,7 @@ const CourseGrid = () => {
 
   if (loading) {
     return (
-      <section className="py-12 md:py-16 bg-[hsl(var(--nav-bg))]">
+      <section ref={ref} className="py-12 md:py-16 bg-[hsl(var(--nav-bg))]">
         <div className="container mx-auto px-4">
           <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-center text-primary mb-10">
             Our Latest Courses
@@ -79,7 +81,7 @@ const CourseGrid = () => {
 
   if (courses.length === 0) {
     return (
-      <section className="py-12 md:py-16 bg-[hsl(var(--nav-bg))]">
+      <section ref={ref} className="py-12 md:py-16 bg-[hsl(var(--nav-bg))]">
         <div className="container mx-auto px-4">
           <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-center text-primary mb-10">
             Our Latest Courses
@@ -91,7 +93,12 @@ const CourseGrid = () => {
   }
 
   return (
-    <section className="py-12 md:py-16 bg-[hsl(var(--nav-bg))]">
+    <section 
+      ref={ref}
+      className={`py-12 md:py-16 bg-[hsl(var(--nav-bg))] transition-all duration-1000 ${
+        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-16'
+      }`}
+    >
       <div className="container mx-auto px-4">
         {/* Section Title */}
         <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-center text-primary mb-10 animate-fade-in">

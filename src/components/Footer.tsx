@@ -1,8 +1,16 @@
 import { MessageCircle, Phone } from "lucide-react";
+import { useScrollReveal } from "@/hooks/useScrollReveal";
 
 const Footer = () => {
+  const { ref, isVisible } = useScrollReveal({ threshold: 0.1 });
+
   return (
-    <footer className="bg-nav text-nav-foreground">
+    <footer 
+      ref={ref}
+      className={`bg-nav text-nav-foreground transition-all duration-1000 ${
+        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+      }`}
+    >
       {/* Main Footer */}
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
