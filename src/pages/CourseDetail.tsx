@@ -8,19 +8,15 @@ import Footer from "@/components/Footer";
 import AnnouncementBar from "@/components/AnnouncementBar";
 import CourseReviews from "@/components/CourseReviews";
 import { getCourseBySlug } from "@/data/courses";
-import { useAuth } from "@/hooks/useAuth";
 import { useCart } from "@/hooks/useCart";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
 
 const CourseDetail = () => {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
-  const { user } = useAuth();
   const { addToCart, isInCart } = useCart();
   const { toast } = useToast();
   const [expandedModules, setExpandedModules] = useState<number[]>([0]);
-  const [isPurchasing, setIsPurchasing] = useState(false);
 
   const course = getCourseBySlug(slug || "");
 
@@ -50,45 +46,14 @@ const CourseDetail = () => {
     );
   };
 
-  const handlePurchase = async () => {
-    if (!user) {
-      toast({
-        title: "Login Required",
-        description: "Please login to purchase this course.",
-        variant: "destructive",
-      });
-      navigate("/auth");
-      return;
+  const handlePurchase = () => {
+    if (!isInCart(course.id)) {
+      addToCart(course);
     }
-
-    setIsPurchasing(true);
-    try {
-      const { error } = await supabase.from("purchases").insert({
-        user_id: user.id,
-        course_title: course.title,
-        course_image: course.image,
-        price: course.currentPrice,
-        original_price: course.originalPrice,
-        status: "completed",
-        download_url: `/downloads/${course.slug}`,
-      });
-
-      if (error) throw error;
-
-      toast({
-        title: "Purchase Successful!",
-        description: "You can now access your course from My Account.",
-      });
-      navigate("/my-account");
-    } catch (error: any) {
-      toast({
-        title: "Purchase Failed",
-        description: error.message || "Something went wrong.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsPurchasing(false);
-    }
+    toast({
+      title: "Added to Cart!",
+      description: "Proceed to checkout to complete your purchase.",
+    });
   };
 
   const totalLessons = course.curriculum.reduce((acc, module) => acc + module.lessons.length, 0);
@@ -219,11 +184,10 @@ const CourseDetail = () => {
                     </Button>
                     <Button
                       onClick={handlePurchase}
-                      disabled={isPurchasing}
                       className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground text-lg py-6"
                       size="lg"
                     >
-                      {isPurchasing ? "Processing..." : "Buy Now"}
+                      Buy Now
                     </Button>
                   </div>
 
