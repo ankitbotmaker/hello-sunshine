@@ -302,36 +302,81 @@ const CourseFormDialog = ({
             {/* Image */}
             <div className="space-y-4">
               <h3 className="font-semibold">Course Image</h3>
-              <div className="flex items-center gap-4">
-                {formData.image_url && (
-                  <img
-                    src={formData.image_url}
-                    alt="Course preview"
-                    className="w-24 h-24 object-cover rounded"
-                  />
-                )}
-                <div className="flex-1">
-                  <Input
-                    id="image_url"
-                    value={formData.image_url}
-                    onChange={e => setFormData(prev => ({ ...prev, image_url: e.target.value }))}
-                    placeholder="Image URL"
-                  />
-                </div>
-                <Label htmlFor="image-upload" className="cursor-pointer">
-                  <div className="flex items-center gap-2 px-4 py-2 bg-secondary rounded-md hover:bg-secondary/80">
-                    <Upload className="h-4 w-4" />
-                    <span>Upload</span>
+              <div 
+                className="border-2 border-dashed border-border rounded-xl p-6 text-center hover:border-primary/50 transition-colors"
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  e.currentTarget.classList.add('border-primary', 'bg-primary/5');
+                }}
+                onDragLeave={(e) => {
+                  e.currentTarget.classList.remove('border-primary', 'bg-primary/5');
+                }}
+                onDrop={async (e) => {
+                  e.preventDefault();
+                  e.currentTarget.classList.remove('border-primary', 'bg-primary/5');
+                  const file = e.dataTransfer.files?.[0];
+                  if (file && file.type.startsWith('image/')) {
+                    setLoading(true);
+                    const url = await onUploadImage(file);
+                    if (url) {
+                      setFormData(prev => ({ ...prev, image_url: url }));
+                    }
+                    setLoading(false);
+                  }
+                }}
+              >
+                {formData.image_url ? (
+                  <div className="relative inline-block">
+                    <img
+                      src={formData.image_url}
+                      alt="Course preview"
+                      className="max-w-[200px] max-h-[150px] object-cover rounded-lg mx-auto"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setFormData(prev => ({ ...prev, image_url: '' }))}
+                      className="absolute -top-2 -right-2 p-1 bg-destructive text-destructive-foreground rounded-full hover:bg-destructive/80"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
                   </div>
-                  <input
-                    id="image-upload"
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={handleImageUpload}
-                  />
-                </Label>
+                ) : (
+                  <div className="py-4">
+                    <Upload className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
+                    <p className="text-muted-foreground mb-2">
+                      Drag & drop an image here, or click to browse
+                    </p>
+                    <Label htmlFor="image-upload" className="cursor-pointer">
+                      <span className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors">
+                        <Upload className="h-4 w-4" />
+                        Choose Image
+                      </span>
+                    </Label>
+                  </div>
+                )}
+                <input
+                  id="image-upload"
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleImageUpload}
+                />
               </div>
+              <div className="space-y-2">
+                <Label htmlFor="image_url">Or paste image URL</Label>
+                <Input
+                  id="image_url"
+                  value={formData.image_url}
+                  onChange={e => setFormData(prev => ({ ...prev, image_url: e.target.value }))}
+                  placeholder="https://example.com/image.jpg"
+                />
+              </div>
+              {loading && (
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <div className="animate-spin rounded-full h-4 w-4 border-2 border-primary border-t-transparent"></div>
+                  Uploading image...
+                </div>
+              )}
             </div>
 
             {/* Pricing */}
