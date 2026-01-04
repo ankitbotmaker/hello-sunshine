@@ -2,10 +2,18 @@ import { Search, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import heroImage from "@/assets/hero-trading.jpg";
+import { useScrollReveal } from "@/hooks/useScrollReveal";
 
 const Hero = () => {
+  const { ref, isVisible } = useScrollReveal({ threshold: 0.2 });
+
   return (
-    <section className="relative min-h-[500px] md:min-h-[550px] flex items-center justify-center overflow-hidden">
+    <section 
+      ref={ref}
+      className={`relative min-h-[500px] md:min-h-[550px] flex items-center justify-center overflow-hidden transition-all duration-1000 ${
+        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+      }`}
+    >
       {/* Background Image */}
       <div 
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
