@@ -64,7 +64,7 @@ const CourseGrid = () => {
 
   if (loading) {
     return (
-      <section className="py-12 md:py-16 bg-background">
+      <section className="py-12 md:py-16 bg-[hsl(var(--nav-bg))]">
         <div className="container mx-auto px-4">
           <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-center text-primary mb-10">
             Our Latest Courses
@@ -79,7 +79,7 @@ const CourseGrid = () => {
 
   if (courses.length === 0) {
     return (
-      <section className="py-12 md:py-16 bg-background">
+      <section className="py-12 md:py-16 bg-[hsl(var(--nav-bg))]">
         <div className="container mx-auto px-4">
           <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-center text-primary mb-10">
             Our Latest Courses
@@ -91,7 +91,7 @@ const CourseGrid = () => {
   }
 
   return (
-    <section className="py-12 md:py-16 bg-background">
+    <section className="py-12 md:py-16 bg-[hsl(var(--nav-bg))]">
       <div className="container mx-auto px-4">
         {/* Section Title */}
         <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-center text-primary mb-10">
@@ -104,7 +104,7 @@ const CourseGrid = () => {
             <Link
               to={`/course/${course.slug}`}
               key={course.id}
-              className="group bg-card rounded-lg overflow-hidden shadow-md hover-lift animate-fade-in border border-border block"
+              className="group bg-secondary rounded-lg overflow-hidden shadow-lg hover-lift animate-fade-in border border-border/50 block"
               style={{ animationDelay: `${index * 0.1}s` }}
             >
               {/* Image Container */}
