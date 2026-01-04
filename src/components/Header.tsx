@@ -6,17 +6,14 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/useAuth";
 import { useAdmin } from "@/hooks/useAdmin";
-import { useCart } from "@/hooks/useCart";
 import { useToast } from "@/hooks/use-toast";
 import { usePendingOrders } from "@/hooks/usePendingOrders";
-import CartDrawer from "@/components/CartDrawer";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const { user, signOut } = useAuth();
   const { isAdmin } = useAdmin();
-  const { totalItems, totalPrice } = useCart();
   const { pendingCount } = usePendingOrders();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -119,11 +116,6 @@ const Header = () => {
                 </Link>
               </Button>
             )}
-            
-            <div className="flex items-center gap-2">
-              <span className="font-medium hidden sm:inline">${totalPrice.toFixed(2)}</span>
-              <CartDrawer />
-            </div>
 
             <Button
               variant="ghost"

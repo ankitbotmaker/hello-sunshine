@@ -1,10 +1,10 @@
-import { ShoppingCart, Check } from "lucide-react";
+import { Send } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
-import { useCart } from "@/hooks/useCart";
-import { useToast } from "@/hooks/use-toast";
+
+const TELEGRAM_USERNAME = "stcs111111111111";
 
 interface Course {
   id: string;
@@ -24,8 +24,6 @@ interface Course {
 }
 
 const CourseGrid = () => {
-  const { addToCart, isInCart } = useCart();
-  const { toast } = useToast();
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -49,40 +47,19 @@ const CourseGrid = () => {
     fetchCourses();
   }, []);
 
-  const handleAddToCart = (e: React.MouseEvent, course: Course) => {
+  const handleBuyNow = (e: React.MouseEvent, course: Course) => {
     e.preventDefault();
     e.stopPropagation();
     
-    const cartItem = {
-      id: course.id,
-      slug: course.slug,
-      title: course.title,
-      image: course.image_url || '/placeholder.svg',
-      categories: course.categories || [],
-      originalPrice: course.original_price,
-      currentPrice: course.current_price,
-      discount: course.discount,
-      description: course.description || '',
-      instructor: course.instructor || '',
-      duration: course.duration || '',
-      lessons: course.lessons,
-      level: course.level,
-      curriculum: [],
-      features: course.features || [],
-    };
-
-    if (isInCart(course.id)) {
-      toast({
-        title: "Already in Cart",
-        description: "This course is already in your cart.",
-      });
-      return;
-    }
-    addToCart(cartItem);
-    toast({
-      title: "Added to Cart",
-      description: `${course.title} has been added to your cart.`,
-    });
+    const message = encodeURIComponent(
+      `🎓 *Course Purchase Request*\n\n` +
+      `📚 *Course:* ${course.title}\n` +
+      `💰 *Price:* $${course.current_price.toFixed(2)} (Original: $${course.original_price.toFixed(2)})\n` +
+      `🏷️ *Discount:* ${course.discount}% OFF\n` +
+      `📊 *Level:* ${course.level}\n\n` +
+      `I'm interested in purchasing this course!`
+    );
+    window.open(`https://t.me/${TELEGRAM_USERNAME}?text=${message}`, '_blank');
   };
 
   if (loading) {
@@ -143,22 +120,14 @@ const CourseGrid = () => {
                   -{course.discount}%
                 </div>
 
-                {/* Quick Add Button - Shows on Hover */}
+                {/* Quick Buy Button - Shows on Hover */}
                 <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                   <Button
                     size="icon"
-                    className={`rounded-full w-12 h-12 ${
-                      isInCart(course.id)
-                        ? "bg-primary/80 text-primary-foreground"
-                        : "bg-primary hover:bg-primary/90 text-primary-foreground"
-                    }`}
-                    onClick={(e) => handleAddToCart(e, course)}
+                    className="rounded-full w-12 h-12 bg-primary hover:bg-primary/90 text-primary-foreground"
+                    onClick={(e) => handleBuyNow(e, course)}
                   >
-                    {isInCart(course.id) ? (
-                      <Check className="w-5 h-5" />
-                    ) : (
-                      <ShoppingCart className="w-5 h-5" />
-                    )}
+                    <Send className="w-5 h-5" />
                   </Button>
                 </div>
               </div>
@@ -198,27 +167,14 @@ const CourseGrid = () => {
                   </span>
                 </div>
 
-                {/* Add to Cart Button */}
+                {/* Buy Now Button */}
                 <Button
-                  className={`w-full mt-4 ${
-                    isInCart(course.id)
-                      ? "bg-secondary text-secondary-foreground hover:bg-secondary/80"
-                      : "bg-primary hover:bg-primary/90 text-primary-foreground"
-                  }`}
+                  className="w-full mt-4 bg-primary hover:bg-primary/90 text-primary-foreground"
                   size="sm"
-                  onClick={(e) => handleAddToCart(e, course)}
+                  onClick={(e) => handleBuyNow(e, course)}
                 >
-                  {isInCart(course.id) ? (
-                    <>
-                      <Check className="w-4 h-4 mr-2" />
-                      In Cart
-                    </>
-                  ) : (
-                    <>
-                      <ShoppingCart className="w-4 h-4 mr-2" />
-                      Add to cart
-                    </>
-                  )}
+                  <Send className="w-4 h-4 mr-2" />
+                  Buy Now
                 </Button>
               </div>
             </Link>
