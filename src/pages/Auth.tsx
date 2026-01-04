@@ -12,7 +12,7 @@ const Auth = () => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  
+
   const { signIn, user, loading } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -32,7 +32,7 @@ const Auth = () => {
       });
       return false;
     }
-    
+
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       toast({
@@ -48,9 +48,9 @@ const Auth = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) return;
-    
+
     setIsLoading(true);
 
     try {
@@ -97,11 +97,11 @@ const Auth = () => {
         {/* Logo */}
         <div className="flex items-center justify-center gap-2 mb-8">
           <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-bold text-lg">
-            TCG
+            CA
           </div>
           <div>
-            <div className="font-bold text-lg leading-tight text-foreground">THE COURSE</div>
-            <div className="font-bold text-lg leading-tight text-primary">GALLERY</div>
+            <div className="font-bold text-lg leading-tight text-foreground">COURSE</div>
+            <div className="font-bold text-lg leading-tight text-primary">ALBUM</div>
           </div>
         </div>
 

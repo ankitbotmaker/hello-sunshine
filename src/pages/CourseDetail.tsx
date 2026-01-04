@@ -1,5 +1,5 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { Clock, BookOpen, BarChart3, Check, ChevronDown, ChevronUp, ArrowLeft, Send } from "lucide-react";
+import { Clock, BookOpen, BarChart3, Check, ChevronDown, ChevronUp, ArrowLeft, Send, Star } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -129,7 +129,7 @@ const CourseDetail = () => {
     <div className="min-h-screen bg-background flex flex-col">
       <AnnouncementBar />
       <Header />
-      
+
       <main className="flex-1">
         {/* Breadcrumb */}
         <div className="bg-secondary/50 py-4">
@@ -144,103 +144,79 @@ const CourseDetail = () => {
           </div>
         </div>
 
-        {/* Hero Section */}
-        <section className="bg-gradient-to-b from-secondary/50 to-background py-8 md:py-12">
-          <div className="container mx-auto px-4">
-            <div className="grid lg:grid-cols-2 gap-8 items-start">
-              {/* Course Image */}
-              <div className="relative rounded-xl overflow-hidden shadow-2xl">
-                <img
-                  src={course.image_url || '/placeholder.svg'}
-                  alt={course.title}
-                  className="w-full aspect-video object-cover"
-                />
-                <div className="absolute top-4 left-4">
-                  <Badge className="bg-destructive text-destructive-foreground text-lg px-3 py-1">
-                    -{course.discount}% OFF
+        {/* Premium Hero Section */}
+        <section className="relative h-[60vh] min-h-[500px] w-full overflow-hidden flex items-center">
+          {/* Background Image with Gradient Overlay */}
+          <div className="absolute inset-0 z-0">
+            <img
+              src={course.image_url || '/placeholder.svg'}
+              alt={course.title}
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-slate-900 via-slate-900/90 to-slate-900/50" />
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent" />
+          </div>
+
+          <div className="container relative z-10 px-4 pt-20">
+            <div className="max-w-3xl space-y-6 animate-fade-in-up">
+              {/* Badges */}
+              <div className="flex flex-wrap gap-3">
+                {course.categories?.map((cat) => (
+                  <Badge key={cat} variant="secondary" className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-3 py-1">
+                    {cat}
                   </Badge>
-                </div>
-              </div>
-
-              {/* Course Info */}
-              <div className="space-y-6">
-                {/* Categories */}
-                <div className="flex flex-wrap gap-2">
-                  {course.categories?.map((cat) => (
-                    <Badge key={cat} variant="outline" className="text-primary border-primary">
-                      {cat}
-                    </Badge>
-                  ))}
-                </div>
-
-                <h1 className="text-3xl md:text-4xl font-bold text-foreground">
-                  {course.title}
-                </h1>
-
-                <p className="text-muted-foreground text-lg">
-                  {course.description}
-                </p>
-
-                {/* Course Stats */}
-                <div className="flex flex-wrap gap-6 text-muted-foreground">
-                  <div className="flex items-center gap-2">
-                    <Clock className="w-5 h-5 text-primary" />
-                    <span>{course.duration || 'Self-paced'}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <BookOpen className="w-5 h-5 text-primary" />
-                    <span>{course.lessons} Lessons</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <BarChart3 className="w-5 h-5 text-primary" />
-                    <span>{course.level}</span>
-                  </div>
-                </div>
-
-                {/* Instructor */}
-                {course.instructor && (
-                  <p className="text-foreground">
-                    <span className="text-muted-foreground">Instructor:</span>{" "}
-                    <span className="font-semibold text-primary">{course.instructor}</span>
-                  </p>
+                ))}
+                {course.discount > 0 && (
+                  <Badge className="bg-red-500/90 text-white animate-pulse border-0 px-3 py-1">
+                    {course.discount}% OFF Limit Time
+                  </Badge>
                 )}
+              </div>
 
-                {/* Price & Purchase */}
-                <div className="bg-card border border-border rounded-xl p-6 space-y-4">
-                  <div className="flex items-center gap-4">
-                    <span className="text-3xl font-bold text-primary">
-                      ${course.current_price.toFixed(2)}
-                    </span>
-                    <span className="text-xl text-muted-foreground line-through">
-                      ${course.original_price.toFixed(2)}
-                    </span>
-                    <Badge className="bg-destructive text-destructive-foreground">
-                      Save {course.discount}%
-                    </Badge>
+              {/* Title & Description */}
+              <h1 className="text-4xl md:text-6xl font-bold font-heading text-white leading-tight">
+                {course.title}
+              </h1>
+              <p className="text-lg md:text-xl text-gray-300 max-w-2xl leading-relaxed">
+                {course.description}
+              </p>
+
+              {/* Course Stats */}
+              <div className="flex flex-wrap items-center gap-6 text-gray-400 pt-4">
+                <div className="flex items-center gap-2">
+                  <Clock className="w-5 h-5 text-emerald-400" />
+                  <span>{course.duration || 'Self-paced'}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <BookOpen className="w-5 h-5 text-emerald-400" />
+                  <span>{course.lessons} Lessons</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <BarChart3 className="w-5 h-5 text-emerald-400" />
+                  <span>{course.level}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="flex text-amber-400">
+                    {[1, 2, 3, 4, 5].map((i) => (
+                      <Star key={i} className="w-4 h-4 fill-current" />
+                    ))}
                   </div>
-
-                  <Button
-                    onClick={handleBuyNow}
-                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground text-lg py-6"
-                    size="lg"
-                  >
-                    <Send className="w-5 h-5 mr-2" />
-                    Buy Now on Telegram
-                  </Button>
-
-                  {/* Features */}
-                  {course.features && course.features.length > 0 && (
-                    <div className="grid grid-cols-2 gap-2 pt-4 border-t border-border">
-                      {course.features.map((feature) => (
-                        <div key={feature} className="flex items-center gap-2 text-sm text-muted-foreground">
-                          <Check className="w-4 h-4 text-primary" />
-                          <span>{feature}</span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
+                  <span className="text-white">(4.8/5)</span>
                 </div>
               </div>
+
+              {/* Instructor Mini-Profile */}
+              {course.instructor && (
+                <div className="flex items-center gap-3 pt-4 border-t border-white/10 mt-6">
+                  <div className="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400 border border-emerald-500/30 font-bold">
+                    {course.instructor.charAt(0)}
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-400">Created by</p>
+                    <p className="text-white font-medium">{course.instructor}</p>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </section>

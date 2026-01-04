@@ -1,23 +1,20 @@
 import { Button } from "@/components/ui/button";
-import categoryStock from "@/assets/category-stock.jpg";
-import categoryForex from "@/assets/category-forex.jpg";
-import categoryMarketing from "@/assets/category-marketing.jpg";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 
 const categories = [
   {
-    title: "STOCK Market",
-    image: categoryStock,
+    title: "Trading MASTERY",
+    image: "https://images.unsplash.com/photo-1611974765270-ca1258634369?q=80&w=2070&auto=format&fit=crop",
     href: "#",
   },
   {
-    title: "Forex Courses",
-    image: categoryForex,
+    title: "Vedic ASTROLOGY",
+    image: "https://images.unsplash.com/photo-1532968961962-8a0cb3a2d4f5?q=80&w=2071&auto=format&fit=crop",
     href: "#",
   },
   {
-    title: "Digital MARKETING",
-    image: categoryMarketing,
+    title: "Coding & SKILLS",
+    image: "https://images.unsplash.com/photo-1587620962725-abab7fe55159?q=80&w=2031&auto=format&fit=crop",
     href: "#",
   },
 ];
@@ -26,11 +23,10 @@ const CategoryCards = () => {
   const { ref, isVisible } = useScrollReveal({ threshold: 0.15 });
 
   return (
-    <section 
+    <section
       ref={ref}
-      className={`py-12 md:py-16 bg-background transition-all duration-1000 ${
-        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-16'
-      }`}
+      className={`py-12 md:py-16 bg-background transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-16'
+        }`}
     >
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -45,7 +41,7 @@ const CategoryCards = () => {
                 className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110"
                 style={{ backgroundImage: `url(${category.image})` }}
               />
-              
+
               {/* Overlay */}
               <div className="absolute inset-0 bg-black/50 group-hover:bg-black/40 transition-colors" />
 

@@ -31,6 +31,9 @@ const CATEGORIES = [
   'Forex Courses',
   'Crypto Trading',
   'Technical Analysis',
+  'Astrology',
+  'Coding',
+  'Skill',
 ];
 
 const LEVELS = ['Beginner', 'Intermediate', 'Advanced', 'Beginner to Advanced'];
@@ -218,7 +221,7 @@ const CourseFormDialog = ({
             {/* Basic Info */}
             <div className="space-y-4">
               <h3 className="font-semibold">Basic Information</h3>
-              
+
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="title">Title *</Label>
@@ -302,7 +305,7 @@ const CourseFormDialog = ({
             {/* Image */}
             <div className="space-y-4">
               <h3 className="font-semibold">Course Image</h3>
-              <div 
+              <div
                 className="border-2 border-dashed border-border rounded-xl p-6 text-center hover:border-primary/50 transition-colors"
                 onDragOver={(e) => {
                   e.preventDefault();
