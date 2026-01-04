@@ -12,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Search, Eye, Edit, Trash2, Plus, BookOpen, Filter } from 'lucide-react';
+import { Search, Eye, Edit, Trash2, Plus, BookOpen, Filter, Images } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import {
   AlertDialog,
@@ -25,6 +25,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import CourseFormDialog from './CourseFormDialog';
+import BulkImageUploadDialog from './BulkImageUploadDialog';
 
 const AdminCourses = () => {
   const { courses, loading, createCourse, updateCourse, deleteCourse, uploadImage } = useCourses();
@@ -34,6 +35,7 @@ const AdminCourses = () => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [courseToDelete, setCourseToDelete] = useState<Course | null>(null);
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
+  const [bulkUploadOpen, setBulkUploadOpen] = useState(false);
 
   // Get unique categories from all courses
   const allCategories = Array.from(
@@ -113,10 +115,20 @@ const AdminCourses = () => {
                 <p className="text-sm text-white/50">{courses.length} total courses</p>
               </div>
             </div>
-            <Button onClick={handleCreate} className="bg-gradient-to-r from-primary to-emerald-400 hover:from-primary/90 hover:to-emerald-400/90 text-white shadow-lg shadow-primary/25">
-              <Plus className="h-4 w-4 mr-2" />
-              Add Course
-            </Button>
+            <div className="flex gap-2">
+              <Button 
+                onClick={() => setBulkUploadOpen(true)} 
+                variant="outline"
+                className="border-white/20 text-white hover:bg-white/10"
+              >
+                <Images className="h-4 w-4 mr-2" />
+                Bulk Upload
+              </Button>
+              <Button onClick={handleCreate} className="bg-gradient-to-r from-primary to-emerald-400 hover:from-primary/90 hover:to-emerald-400/90 text-white shadow-lg shadow-primary/25">
+                <Plus className="h-4 w-4 mr-2" />
+                Add Course
+              </Button>
+            </div>
           </div>
         </div>
         <div className="p-6">
@@ -273,6 +285,12 @@ const AdminCourses = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <BulkImageUploadDialog
+        open={bulkUploadOpen}
+        onOpenChange={setBulkUploadOpen}
+        onUploadImage={uploadImage}
+      />
     </>
   );
 };
