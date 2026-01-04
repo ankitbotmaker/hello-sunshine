@@ -1,16 +1,33 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import { Course } from "@/data/courses";
 
-interface CartItem extends Course {
+interface CartCourse {
+  id: string | number;
+  slug: string;
+  title: string;
+  image: string;
+  categories: string[];
+  originalPrice: number;
+  currentPrice: number;
+  discount: number;
+  description: string;
+  instructor: string;
+  duration: string;
+  lessons: number;
+  level: string;
+  curriculum: { title: string; lessons: string[] }[];
+  features: string[];
+}
+
+interface CartItem extends CartCourse {
   quantity: number;
 }
 
 interface CartContextType {
   items: CartItem[];
-  addToCart: (course: Course) => void;
-  removeFromCart: (courseId: number) => void;
+  addToCart: (course: CartCourse) => void;
+  removeFromCart: (courseId: string | number) => void;
   clearCart: () => void;
-  isInCart: (courseId: number) => boolean;
+  isInCart: (courseId: string | number) => boolean;
   totalItems: number;
   totalPrice: number;
   totalSavings: number;
@@ -28,24 +45,24 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     localStorage.setItem("cart", JSON.stringify(items));
   }, [items]);
 
-  const addToCart = (course: Course) => {
+  const addToCart = (course: CartCourse) => {
     setItems((prev) => {
-      const exists = prev.find((item) => item.id === course.id);
+      const exists = prev.find((item) => String(item.id) === String(course.id));
       if (exists) return prev;
       return [...prev, { ...course, quantity: 1 }];
     });
   };
 
-  const removeFromCart = (courseId: number) => {
-    setItems((prev) => prev.filter((item) => item.id !== courseId));
+  const removeFromCart = (courseId: string | number) => {
+    setItems((prev) => prev.filter((item) => String(item.id) !== String(courseId)));
   };
 
   const clearCart = () => {
     setItems([]);
   };
 
-  const isInCart = (courseId: number) => {
-    return items.some((item) => item.id === courseId);
+  const isInCart = (courseId: string | number) => {
+    return items.some((item) => String(item.id) === String(courseId));
   };
 
   const totalItems = items.length;

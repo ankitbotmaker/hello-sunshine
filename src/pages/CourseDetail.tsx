@@ -1,15 +1,39 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { ShoppingCart, Clock, BookOpen, BarChart3, Check, ChevronDown, ChevronUp, ArrowLeft } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import AnnouncementBar from "@/components/AnnouncementBar";
 import CourseReviews from "@/components/CourseReviews";
-import { getCourseBySlug } from "@/data/courses";
+import { supabase } from "@/integrations/supabase/client";
 import { useCart } from "@/hooks/useCart";
 import { useToast } from "@/hooks/use-toast";
+
+interface CourseModule {
+  title: string;
+  lessons: string[];
+}
+
+interface Course {
+  id: string;
+  slug: string;
+  title: string;
+  image_url: string | null;
+  categories: string[];
+  original_price: number;
+  current_price: number;
+  discount: number;
+  description: string | null;
+  instructor: string | null;
+  duration: string | null;
+  lessons: number;
+  level: string;
+  curriculum: CourseModule[];
+  features: string[];
+  is_active: boolean;
+}
 
 const CourseDetail = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -17,8 +41,49 @@ const CourseDetail = () => {
   const { addToCart, isInCart } = useCart();
   const { toast } = useToast();
   const [expandedModules, setExpandedModules] = useState<number[]>([0]);
+  const [course, setCourse] = useState<Course | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  const course = getCourseBySlug(slug || "");
+  useEffect(() => {
+    const fetchCourse = async () => {
+      if (!slug) {
+        setLoading(false);
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from('courses')
+        .select('*')
+        .eq('slug', slug)
+        .eq('is_active', true)
+        .maybeSingle();
+
+      if (error) {
+        console.error('Error fetching course:', error);
+      } else if (data) {
+        setCourse({
+          ...data,
+          curriculum: (data.curriculum as unknown as CourseModule[]) || [],
+        } as Course);
+      }
+      setLoading(false);
+    };
+
+    fetchCourse();
+  }, [slug]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col">
+        <AnnouncementBar />
+        <Header />
+        <main className="flex-1 flex items-center justify-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent"></div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   if (!course) {
     return (
@@ -28,8 +93,8 @@ const CourseDetail = () => {
         <main className="flex-1 flex items-center justify-center">
           <div className="text-center">
             <h1 className="text-2xl font-bold text-foreground mb-4">Course Not Found</h1>
-            <Link to="/" className="text-primary hover:underline">
-              Return to Home
+            <Link to="/courses" className="text-primary hover:underline">
+              Browse All Courses
             </Link>
           </div>
         </main>
@@ -46,17 +111,44 @@ const CourseDetail = () => {
     );
   };
 
-  const handlePurchase = () => {
-    if (!isInCart(course.id)) {
-      addToCart(course);
+  const handleAddToCart = () => {
+    const cartItem = {
+      id: course.id,
+      slug: course.slug,
+      title: course.title,
+      image: course.image_url || '/placeholder.svg',
+      categories: course.categories,
+      originalPrice: course.original_price,
+      currentPrice: course.current_price,
+      discount: course.discount,
+      description: course.description || '',
+      instructor: course.instructor || '',
+      duration: course.duration || '',
+      lessons: course.lessons,
+      level: course.level,
+      curriculum: course.curriculum,
+      features: course.features,
+    };
+
+    if (isInCart(course.id)) {
+      toast({
+        title: "Already in Cart",
+        description: "This course is already in your cart.",
+      });
+      return;
     }
+    addToCart(cartItem);
     toast({
-      title: "Added to Cart!",
-      description: "Proceed to checkout to complete your purchase.",
+      title: "Added to Cart",
+      description: `${course.title} has been added to your cart.`,
     });
   };
 
-  const totalLessons = course.curriculum.reduce((acc, module) => acc + module.lessons.length, 0);
+  const handlePurchase = () => {
+    handleAddToCart();
+  };
+
+  const totalLessons = course.curriculum?.reduce((acc, module) => acc + (module.lessons?.length || 0), 0) || 0;
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -84,7 +176,7 @@ const CourseDetail = () => {
               {/* Course Image */}
               <div className="relative rounded-xl overflow-hidden shadow-2xl">
                 <img
-                  src={course.image}
+                  src={course.image_url || '/placeholder.svg'}
                   alt={course.title}
                   className="w-full aspect-video object-cover"
                 />
@@ -99,7 +191,7 @@ const CourseDetail = () => {
               <div className="space-y-6">
                 {/* Categories */}
                 <div className="flex flex-wrap gap-2">
-                  {course.categories.map((cat) => (
+                  {course.categories?.map((cat) => (
                     <Badge key={cat} variant="outline" className="text-primary border-primary">
                       {cat}
                     </Badge>
@@ -118,7 +210,7 @@ const CourseDetail = () => {
                 <div className="flex flex-wrap gap-6 text-muted-foreground">
                   <div className="flex items-center gap-2">
                     <Clock className="w-5 h-5 text-primary" />
-                    <span>{course.duration}</span>
+                    <span>{course.duration || 'Self-paced'}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <BookOpen className="w-5 h-5 text-primary" />
@@ -131,19 +223,21 @@ const CourseDetail = () => {
                 </div>
 
                 {/* Instructor */}
-                <p className="text-foreground">
-                  <span className="text-muted-foreground">Instructor:</span>{" "}
-                  <span className="font-semibold text-primary">{course.instructor}</span>
-                </p>
+                {course.instructor && (
+                  <p className="text-foreground">
+                    <span className="text-muted-foreground">Instructor:</span>{" "}
+                    <span className="font-semibold text-primary">{course.instructor}</span>
+                  </p>
+                )}
 
                 {/* Price & Purchase */}
                 <div className="bg-card border border-border rounded-xl p-6 space-y-4">
                   <div className="flex items-center gap-4">
                     <span className="text-3xl font-bold text-primary">
-                      ${course.currentPrice.toFixed(2)}
+                      ${course.current_price.toFixed(2)}
                     </span>
                     <span className="text-xl text-muted-foreground line-through">
-                      ${course.originalPrice.toFixed(2)}
+                      ${course.original_price.toFixed(2)}
                     </span>
                     <Badge className="bg-destructive text-destructive-foreground">
                       Save {course.discount}%
@@ -152,20 +246,7 @@ const CourseDetail = () => {
 
                   <div className="flex gap-3">
                     <Button
-                      onClick={() => {
-                        if (isInCart(course.id)) {
-                          toast({
-                            title: "Already in Cart",
-                            description: "This course is already in your cart.",
-                          });
-                          return;
-                        }
-                        addToCart(course);
-                        toast({
-                          title: "Added to Cart",
-                          description: `${course.title} has been added to your cart.`,
-                        });
-                      }}
+                      onClick={handleAddToCart}
                       variant={isInCart(course.id) ? "secondary" : "outline"}
                       className="flex-1 text-lg py-6"
                       size="lg"
@@ -192,14 +273,16 @@ const CourseDetail = () => {
                   </div>
 
                   {/* Features */}
-                  <div className="grid grid-cols-2 gap-2 pt-4 border-t border-border">
-                    {course.features.map((feature) => (
-                      <div key={feature} className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Check className="w-4 h-4 text-primary" />
-                        <span>{feature}</span>
-                      </div>
-                    ))}
-                  </div>
+                  {course.features && course.features.length > 0 && (
+                    <div className="grid grid-cols-2 gap-2 pt-4 border-t border-border">
+                      {course.features.map((feature) => (
+                        <div key={feature} className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <Check className="w-4 h-4 text-primary" />
+                          <span>{feature}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -207,61 +290,63 @@ const CourseDetail = () => {
         </section>
 
         {/* Curriculum Section */}
-        <section className="py-12 md:py-16">
-          <div className="container mx-auto px-4">
-            <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-8">
-              Course Curriculum
-              <span className="text-muted-foreground text-lg font-normal ml-4">
-                {course.curriculum.length} Modules • {totalLessons} Lessons
-              </span>
-            </h2>
+        {course.curriculum && course.curriculum.length > 0 && (
+          <section className="py-12 md:py-16">
+            <div className="container mx-auto px-4">
+              <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-8">
+                Course Curriculum
+                <span className="text-muted-foreground text-lg font-normal ml-4">
+                  {course.curriculum.length} Modules • {totalLessons} Lessons
+                </span>
+              </h2>
 
-            <div className="space-y-4 max-w-3xl">
-              {course.curriculum.map((module, index) => (
-                <div
-                  key={index}
-                  className="bg-card border border-border rounded-xl overflow-hidden"
-                >
-                  <button
-                    onClick={() => toggleModule(index)}
-                    className="w-full flex items-center justify-between p-5 text-left hover:bg-secondary/50 transition-colors"
+              <div className="space-y-4 max-w-3xl">
+                {course.curriculum.map((module, index) => (
+                  <div
+                    key={index}
+                    className="bg-card border border-border rounded-xl overflow-hidden"
                   >
-                    <div className="flex items-center gap-4">
-                      <span className="w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-semibold text-sm">
-                        {index + 1}
-                      </span>
-                      <div>
-                        <h3 className="font-semibold text-foreground">{module.title}</h3>
-                        <p className="text-sm text-muted-foreground">
-                          {module.lessons.length} lessons
-                        </p>
-                      </div>
-                    </div>
-                    {expandedModules.includes(index) ? (
-                      <ChevronUp className="w-5 h-5 text-muted-foreground" />
-                    ) : (
-                      <ChevronDown className="w-5 h-5 text-muted-foreground" />
-                    )}
-                  </button>
-
-                  {expandedModules.includes(index) && (
-                    <div className="border-t border-border">
-                      {module.lessons.map((lesson, lessonIndex) => (
-                        <div
-                          key={lessonIndex}
-                          className="flex items-center gap-4 p-4 pl-16 hover:bg-secondary/30 transition-colors border-b border-border last:border-b-0"
-                        >
-                          <BookOpen className="w-4 h-4 text-primary" />
-                          <span className="text-foreground">{lesson}</span>
+                    <button
+                      onClick={() => toggleModule(index)}
+                      className="w-full flex items-center justify-between p-5 text-left hover:bg-secondary/50 transition-colors"
+                    >
+                      <div className="flex items-center gap-4">
+                        <span className="w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-semibold text-sm">
+                          {index + 1}
+                        </span>
+                        <div>
+                          <h3 className="font-semibold text-foreground">{module.title}</h3>
+                          <p className="text-sm text-muted-foreground">
+                            {module.lessons?.length || 0} lessons
+                          </p>
                         </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ))}
+                      </div>
+                      {expandedModules.includes(index) ? (
+                        <ChevronUp className="w-5 h-5 text-muted-foreground" />
+                      ) : (
+                        <ChevronDown className="w-5 h-5 text-muted-foreground" />
+                      )}
+                    </button>
+
+                    {expandedModules.includes(index) && module.lessons && (
+                      <div className="border-t border-border">
+                        {module.lessons.map((lesson, lessonIndex) => (
+                          <div
+                            key={lessonIndex}
+                            className="flex items-center gap-4 p-4 pl-16 hover:bg-secondary/30 transition-colors border-b border-border last:border-b-0"
+                          >
+                            <BookOpen className="w-4 h-4 text-primary" />
+                            <span className="text-foreground">{lesson}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
+        )}
 
         {/* Reviews Section */}
         <CourseReviews courseSlug={course.slug} />
