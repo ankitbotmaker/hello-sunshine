@@ -243,7 +243,7 @@ const CourseGrid = ({ courses: propCourses, isLoading: propLoading }: CourseGrid
                   {/* Content */}
                   <div className="flex flex-col flex-grow p-5 relative">
                     <div className="mb-auto">
-                      <h3 className="text-xl font-bold text-white mb-2 line-clamp-2 group-hover:text-emerald-400 transition-colors">
+                      <h3 className="text-xl font-bold text-foreground mb-2 line-clamp-2 group-hover:text-primary transition-colors">
                         {course.title}
                       </h3>
                       <p className="text-sm text-gray-400 mb-4 line-clamp-2">
@@ -269,7 +269,7 @@ const CourseGrid = ({ courses: propCourses, isLoading: propLoading }: CourseGrid
                     {/* Price and Action */}
                     <div className="pt-4 border-t border-white/5 flex items-center justify-between gap-4 mt-4">
                       <div>
-                        <div className="text-xs text-gray-500 line-through">₹{course.original_price}</div>
+                        <div className="text-xs text-muted-foreground line-through">₹{course.original_price}</div>
                         <div className="text-xl font-bold text-foreground flex items-center gap-1">
                           ₹{course.current_price}
                         </div>
