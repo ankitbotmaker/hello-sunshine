@@ -270,7 +270,7 @@ const CourseGrid = ({ courses: propCourses, isLoading: propLoading }: CourseGrid
                     <div className="pt-4 border-t border-white/5 flex items-center justify-between gap-4 mt-4">
                       <div>
                         <div className="text-xs text-gray-500 line-through">₹{course.original_price}</div>
-                        <div className="text-xl font-bold text-white flex items-center gap-1">
+                        <div className="text-xl font-bold text-foreground flex items-center gap-1">
                           ₹{course.current_price}
                         </div>
                       </div>
