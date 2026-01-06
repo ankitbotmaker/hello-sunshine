@@ -1,6 +1,6 @@
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
-import CategoryCards from "@/components/CategoryCards";
+
 import CourseGrid from "@/components/CourseGrid";
 import Footer from "@/components/Footer";
 import { useCourses } from "@/hooks/useCourses";
@@ -13,7 +13,7 @@ const Index = () => {
       <Header />
       <main>
         <Hero />
-        <CategoryCards />
+
         <CourseGrid courses={courses} isLoading={loading} />
       </main>
       <Footer />
