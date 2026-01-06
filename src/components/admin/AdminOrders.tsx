@@ -135,7 +135,7 @@ const AdminOrders = () => {
                 placeholder="Search orders..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="max-w-sm bg-white/5 border-white/10 text-white placeholder:text-white/40"
+                className="max-w-sm bg-white border-white/10 text-gray-900 placeholder:text-gray-500"
               />
             </div>
             <Select value={statusFilter} onValueChange={setStatusFilter}>
@@ -174,8 +174,8 @@ const AdminOrders = () => {
                     <p className="font-bold text-primary">${Number(purchase.price).toFixed(2)}</p>
                     <Badge className={
                       purchase.status === 'completed' ? 'bg-primary/20 text-primary border-0' :
-                      purchase.status === 'pending' ? 'bg-yellow-500/20 text-yellow-400 border-0' :
-                      'bg-red-500/20 text-red-400 border-0'
+                        purchase.status === 'pending' ? 'bg-yellow-500/20 text-yellow-400 border-0' :
+                          'bg-red-500/20 text-red-400 border-0'
                     }>
                       {purchase.status}
                     </Badge>

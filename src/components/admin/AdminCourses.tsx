@@ -45,10 +45,10 @@ const AdminCourses = () => {
   const filteredCourses = courses.filter(course => {
     const matchesSearch = course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       course.categories?.some(cat => cat.toLowerCase().includes(searchTerm.toLowerCase()));
-    
-    const matchesCategory = categoryFilter === 'all' || 
+
+    const matchesCategory = categoryFilter === 'all' ||
       course.categories?.includes(categoryFilter);
-    
+
     return matchesSearch && matchesCategory;
   });
 
@@ -116,8 +116,8 @@ const AdminCourses = () => {
               </div>
             </div>
             <div className="flex gap-2">
-              <Button 
-                onClick={() => setBulkUploadOpen(true)} 
+              <Button
+                onClick={() => setBulkUploadOpen(true)}
                 variant="outline"
                 className="border-white/20 text-white hover:bg-white/10"
               >
@@ -133,13 +133,13 @@ const AdminCourses = () => {
         </div>
         <div className="p-6">
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-4">
-          <div className="flex items-center gap-2 flex-1">
+            <div className="flex items-center gap-2 flex-1">
               <Search className="h-4 w-4 text-white/40" />
               <Input
                 placeholder="Search courses..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="max-w-sm bg-white/5 border-white/10 text-white placeholder:text-white/40 focus:border-primary"
+                className="max-w-sm bg-white border-white/10 text-gray-900 placeholder:text-gray-500 focus:border-primary"
               />
             </div>
             <div className="flex items-center gap-2">

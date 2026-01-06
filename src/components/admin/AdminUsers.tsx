@@ -35,7 +35,7 @@ const AdminUsers = () => {
 
   const fetchData = async () => {
     setLoading(true);
-    
+
     const [profilesRes, rolesRes] = await Promise.all([
       supabase.from('profiles').select('*').order('created_at', { ascending: false }),
       supabase.from('user_roles').select('user_id, role')
@@ -162,7 +162,7 @@ const AdminUsers = () => {
             placeholder="Search users..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="max-w-sm bg-white/5 border-white/10 text-white placeholder:text-white/40"
+            className="max-w-sm bg-white border-white/10 text-gray-900 placeholder:text-gray-500"
           />
         </div>
 
@@ -193,8 +193,8 @@ const AdminUsers = () => {
                 <div className="flex items-center gap-4">
                   <Badge className={
                     getUserRole(profile.user_id) === 'admin' ? 'bg-primary/20 text-primary border-0' :
-                    getUserRole(profile.user_id) === 'moderator' ? 'bg-blue-500/20 text-blue-400 border-0' :
-                    'bg-white/10 text-white/50 border-0'
+                      getUserRole(profile.user_id) === 'moderator' ? 'bg-blue-500/20 text-blue-400 border-0' :
+                        'bg-white/10 text-white/50 border-0'
                   }>
                     {getUserRole(profile.user_id)}
                   </Badge>

@@ -83,7 +83,7 @@ const Header = () => {
               <Input
                 type="text"
                 placeholder="Search courses..."
-                className="w-full pl-4 pr-12 py-6 bg-white/5 border-white/10 text-white placeholder:text-gray-400 rounded-xl focus:bg-white/10 focus:border-emerald-500/50 transition-all"
+                className="w-full pl-4 pr-12 py-6 bg-white border-white/10 text-gray-900 placeholder:text-gray-500 rounded-xl focus:bg-white focus:border-emerald-500/50 transition-all"
               />
               <Button
                 size="icon"
@@ -171,7 +171,7 @@ const Header = () => {
                 <Input
                   type="text"
                   placeholder="Search courses..."
-                  className="w-full pl-4 pr-12 bg-white/5 border-white/10 text-white rounded-xl"
+                  className="w-full pl-4 pr-12 bg-white border-white/10 text-gray-900 rounded-xl"
                 />
                 <Button
                   size="icon"
